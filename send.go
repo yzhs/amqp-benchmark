@@ -13,7 +13,7 @@ func main() {
 	FailOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-	durable := false
+	durable := true
 	deleteWhenUnused := false
 	exclusive := false
 	noWait := false
@@ -27,16 +27,22 @@ func main() {
 	)
 	FailOnError(err, "Failed to declare a queue")
 
-	body := "ping"
-	err = ch.Publish(
+	body := []byte("ping")
+	for i := 0; i < 100000; i++ {
+		send(ch, q, body)
+	}
+
+}
+
+func send(ch *amqp.Channel, q amqp.Queue, body []byte) {
+	err := ch.Publish(
 		"",     //exchange
 		q.Name, // routing key
 		false,  // mandatory
 		false,  // immediate
 		amqp.Publishing{
 			ContentType: "text/plain",
-			Body:        []byte(body),
+			Body:        body,
 		})
-
 	FailOnError(err, "Failed to publish a message")
 }

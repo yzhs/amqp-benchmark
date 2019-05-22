@@ -15,7 +15,7 @@ func main() {
 	FailOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-	durable := false
+	durable := true
 	deleteWhenUnused := false
 	exclusive := false
 	noWait := false
@@ -40,14 +40,13 @@ func main() {
 	)
 	FailOnError(err, "Failed to register a consumer")
 
-	forever := make(chan bool)
-
-	go func() {
-		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+	count := 0
+	for _ = range msgs {
+		count += 1
+		if count >= 100000 {
+			break
 		}
-	}()
+	}
 
-	log.Printf(" [*] Waiting for messages. To exit press Ctrl+c")
-	<-forever
+	log.Printf("Received %d messages", count)
 }
