@@ -15,35 +15,27 @@ func main() {
 	FailOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-	durable := true
-	deleteWhenUnused := false
-	exclusive := false
-	noWait := false
-	q, err := ch.QueueDeclare(
-		"pingpong",
-		durable,
-		deleteWhenUnused,
-		exclusive,
-		noWait,
-		nil,
-	)
-	FailOnError(err, "Failed to declare a queue")
+	queue := ConnectToQueue(ch, "pingpong")
 
 	msgs, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
+		queue.Name, // queue
+		"",         // consumer
+		true,       // auto-ack
+		false,      // exclusive
+		false,      // no-local
+		false,      // no-wait
+		nil,        // args
 	)
 	FailOnError(err, "Failed to register a consumer")
 
+	GetMessages(msgs, 100000)
+}
+
+func GetMessages(msgs <-chan amqp.Delivery, maxNumber int) {
 	count := 0
 	for _ = range msgs {
 		count += 1
-		if count >= 100000 {
+		if count >= maxNumber {
 			break
 		}
 	}

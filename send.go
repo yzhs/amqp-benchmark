@@ -13,23 +13,11 @@ func main() {
 	FailOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-	durable := true
-	deleteWhenUnused := false
-	exclusive := false
-	noWait := false
-	q, err := ch.QueueDeclare(
-		"pingpong",
-		durable,
-		deleteWhenUnused,
-		exclusive,
-		noWait,
-		nil,
-	)
-	FailOnError(err, "Failed to declare a queue")
+	queue := ConnectToQueue(ch, "pingpong")
 
 	body := []byte("ping")
 	for i := 0; i < 100000; i++ {
-		send(ch, q, body)
+		send(ch, queue, body)
 	}
 
 }
