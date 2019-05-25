@@ -5,3 +5,6 @@ send: send.go util.go
 
 receive: receive.go util.go
 	go build $^
+
+pingpong: pingpong.go util.go
+	go build $^
