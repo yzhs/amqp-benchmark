@@ -1,4 +1,4 @@
-all: receive send
+all: receive send pingpong
 
 send: send.go util.go
 	go build $^
