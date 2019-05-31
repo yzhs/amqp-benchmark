@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/streadway/amqp"
 )
@@ -28,12 +29,21 @@ func main() {
 	)
 	FailOnError(err, "Failed to register a consumer")
 
-	GetMessages(msgs, 100000)
+	GetMessages(msgs, 100000, queue.Name)
 }
 
-func GetMessages(msgs <-chan amqp.Delivery, maxNumber int) {
+func GetMessages(msgs <-chan amqp.Delivery, maxNumber int, queueName string) {
+	f, err := os.Create("queues/" + queueName)
+	FailOnError(err, "Could not create file")
+	defer f.Close()
+
 	count := 0
-	for _ = range msgs {
+	for msg := range msgs {
+		_, err = f.Write(msg.Body)
+		FailOnError(err, "Could not write to file")
+		_, err = f.Write([]byte("\n\n"))
+		FailOnError(err, "Could not write to file")
+
 		count += 1
 		if count >= maxNumber {
 			break
