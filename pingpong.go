@@ -31,7 +31,7 @@ func main() {
 	count := 0
 	body := []byte("ping")
 
-	for i := 0; i < 50000; i++ {
+	for i := 0; i < NumberOfMessages/2; i++ {
 		send(ch, queue, body)
 		_ = <-msgs
 		count += 1

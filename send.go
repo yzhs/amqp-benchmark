@@ -16,7 +16,7 @@ func main() {
 	queue := ConnectToQueue(ch, "pingpong")
 
 	body := []byte("ping")
-	for i := 0; i < 100000; i++ {
+	for i := 0; i < NumberOfMessages; i++ {
 		send(ch, queue, body)
 	}
 

@@ -29,7 +29,7 @@ func main() {
 	)
 	FailOnError(err, "Failed to register a consumer")
 
-	GetMessages(msgs, 100000, queue.Name)
+	GetMessages(msgs, NumberOfMessages, queue.Name)
 }
 
 func GetMessages(msgs <-chan amqp.Delivery, maxNumber int, queueName string) {

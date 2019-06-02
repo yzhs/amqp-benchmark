@@ -9,6 +9,7 @@ import (
 const (
 	//ConnectionString string = "amqp://foobar:guest@eris:5672/"
 	ConnectionString string = "amqp://guest:guest@localhost:5672/"
+	NumberOfMessages int    = 10
 )
 
 func FailOnError(err error, msg string) {
