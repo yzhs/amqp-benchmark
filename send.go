@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/streadway/amqp"
 )
 
@@ -15,8 +17,8 @@ func main() {
 
 	queue := ConnectToQueue(ch, "pingpong")
 
-	body := []byte("ping")
 	for i := 0; i < NumberOfMessages; i++ {
+		body := []byte(generateBody(i))
 		send(ch, queue, body)
 	}
 
@@ -29,8 +31,19 @@ func send(ch *amqp.Channel, q amqp.Queue, body []byte) {
 		false,  // mandatory
 		false,  // immediate
 		amqp.Publishing{
-			ContentType: "text/plain",
+			ContentType: "application/json",
 			Body:        body,
 		})
 	FailOnError(err, "Failed to publish a message")
+}
+
+func generateBody(i int) string {
+	return `{
+	"destinationAddress": "` + MassTransitConnectionString + `",
+	"headers": {},
+	"message": {
+		"value": ` + strconv.Itoa(i) + `
+	},
+	"messageType"
+}`
 }
